@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desempenho Mensal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .grafico-container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4e73df;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+        .faixa {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Relatório de Vendas</h1>
+
+    <div class="grafico-container">
+        <h2>Atacado</h2>
+        <canvas id="graficoAtacado"></canvas>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Mês</th>
+                    <th>Vendas Atacado (R$)</th>
+                    <th>Faixa</th>
+                    <th>Recompensa (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Maio</td>
+                    <td>R$ 214.774,85</td>
+                    <td class="faixa">(antigo 0,5)</td>
+                    <td>R$ 1.073,87</td>
+                </tr>
+                <tr>
+                    <td>Junho</td>
+                    <td>R$ 189.859,26</td>
+                    <td class="faixa">176.000 a 215.000</td>
+                    <td>R$ 1.100,00</td>
+                </tr>
+                <tr>
+                    <td>Julho</td>
+                    <td>R$ 243.911,95</td>
+                    <td class="faixa">216.000 a 245.000</td>
+                    <td>R$ 1.250,00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grafico-container">
+        <h2>Varejo</h2>
+        <canvas id="graficoVarejo"></canvas>
+    </div>
+
+    <script>
+        const meses = ["Maio", "Junho", "Julho"];
+
+        // Dados Atacado
+        const vendasAtacado = [214774.85, 189859.26, 243911.95];
+        const recompensaAtacado = [1073.87, 1100.00, 1250.00];
+
+        // Dados Varejo
+        const vendasVarejo = [2699, 8095, 5097];
+
+        // Gráfico Atacado
+        new Chart(document.getElementById("graficoAtacado"), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: "Vendas Atacado (R$)",
+                        data: vendasAtacado,
+                        backgroundColor: "#4e73df",
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: "Recompensa (R$)",
+                        data: recompensaAtacado,
+                        type: 'line',
+                        borderColor: "#e74a3b",
+                        backgroundColor: "#e74a3b",
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        position: 'left',
+                        ticks: {
+                            callback: value => 'R$ ' + value.toLocaleString('pt-BR')
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: {
+                            callback: value => 'R$ ' + value.toLocaleString('pt-BR')
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico Varejo
+        new Chart(document.getElementById("graficoVarejo"), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: "Vendas Varejo (R$)",
+                    data: vendasVarejo,
+                    backgroundColor: "#1cc88a"
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => 'R$ ' + value.toLocaleString('pt-BR')
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
