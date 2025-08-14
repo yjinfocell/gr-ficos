@@ -125,6 +125,12 @@
         faixaAtacado: Z(["0","0","0","0","0","R$ 176.000 a R$ 215.000","R$ 216.000 a R$ 245.000","R$ 86.000 a R$ 115.000"]),
         recompensaAtacado: Z([0,0,0,0,0,1100,1250,0])
       },
+      "AYALA GARCIA- ESTAGIÁRIO ATENDENTE": {
+        varejo: Z([0,0,0,0,0,0,0,1867]),
+        atacado: Z([0,0,0,0,0,0,0,2889.4]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+        recompensaAtacado: Z([0,0,0,0,0,0,0,0])
+      },
       "CAROLYNE SOARES DA SILVA": {
         varejo: Z([0,0,0,16298,7694,10834.5,8136,5077]),
         atacado: Z([0,0,0,24867.5,12344.3,6898.7,19811,2312.6]),
@@ -183,7 +189,7 @@
         const totalAt = v.atacado.reduce((a,b)=>a+(b||0),0);
         const li = document.createElement('div');
         li.className = 'vendor';
-        li.innerHTML = `<span>👤</span><span>${name}</span><span class="pill">${fmtBRL(totalAt)}</span>`;
+        li.innerHTML = `<span>👤</span><span>${name}</span>`;
         li.onclick = ()=> selectVendor(name, li);
         vendorListEl.appendChild(li);
       });
@@ -346,4 +352,3 @@
   </script>
 </body>
 </html>
-
