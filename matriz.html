@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard – Vendas por Vendedor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --muted:#94a3b8;
+      --text:#e5e7eb;
+      --accent:#22c55e;
+      --accent2:#3b82f6;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --card:#0b1220;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:linear-gradient(180deg, var(--bg), #020617);
+      color:var(--text); font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+    }
+    header{
+      padding:20px; display:flex; gap:12px; align-items:center; justify-content:space-between; border-bottom:1px solid #1f2937; position:sticky; top:0; background:rgba(2,6,23,.8); backdrop-filter: blur(6px); z-index:10;
+    }
+    header h1{font-size:20px; margin:0; font-weight:600}
+    .wrap{display:grid; grid-template-columns:320px 1fr; min-height:calc(100vh - 64px)}
+    @media (max-width: 1024px){ .wrap{grid-template-columns:1fr} }
+    aside{
+      border-right:1px solid #1f2937; padding:16px; max-height:calc(100vh - 64px); overflow:auto; background:rgba(2,6,23,.6);
+    }
+    .search{
+      width:100%; padding:10px 12px; background:#0b1220; border:1px solid #1f2937; border-radius:10px; color:var(--text);
+      outline:none; margin-bottom:12px;
+    }
+    .vendor{
+      display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; cursor:pointer; color:#cbd5e1; border:1px solid transparent;
+    }
+    .vendor:hover{ background:#0b1220; border-color:#1f2937 }
+    .vendor.active{ background:#0b1220; border-color:#334155; color:#fff }
+    .pill{margin-left:auto; font-size:12px; padding:2px 8px; border-radius:999px; background:#0b1220; border:1px solid #1f2937; color:#a3e635}
+
+    main{ padding:18px; }
+    .panel{ background:linear-gradient(180deg, var(--panel), #0b1220); border:1px solid #1f2937; border-radius:16px; padding:16px; }
+    .title{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:10px }
+    .title h2{ margin:0; font-size:18px }
+
+    .grid{ display:grid; grid-template-columns:1fr; gap:16px }
+    @media (min-width: 900px){ .grid{ grid-template-columns: 1fr 1fr } }
+
+    .table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px }
+    .table th,.table td{ border-bottom:1px dashed #1f2937; padding:10px 8px; text-align:left }
+    .table th{ color:#cbd5e1; font-weight:600 }
+    .badge{ font-size:12px; padding:3px 8px; border:1px solid #1f2937; border-radius:999px; background:#0b1220 }
+
+    .totals{ display:flex; gap:10px; flex-wrap:wrap }
+    .kpi{ flex:1 1 180px; background:#0b1220; border:1px solid #1f2937; border-radius:12px; padding:10px }
+    .kpi .k{ color:var(--muted); font-size:12px }
+    .kpi .v{ font-weight:700; font-size:18px }
+
+    footer{ color:#64748b; font-size:12px; text-align:center; padding:14px }
+    .hint{ color:#94a3b8; font-size:12px }
+    .note{ font-size:12px; color:#a3a3a3; }
+
+    .panel canvas {
+      max-height: 300px;
+      width: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dashboard – Vendas por Vendedor</h1>
+    <div class="hint">Clique em um vendedor para visualizar os gráficos e tabelas.</div>
+  </header>
+
+  <div class="wrap">
+    <aside>
+      <input id="search" class="search" placeholder="Buscar vendedor..." />
+      <div id="vendorList"></div>
+    </aside>
+    <main>
+      <div class="panel">
+        <div class="title">
+          <h2 id="sellerName">Selecione um vendedor</h2>
+          <span id="periodBadge" class="badge">Período: Jan → Ago (até 13/08)</span>
+        </div>
+
+        <div class="totals" id="totals"></div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="title"><h2>Atacado</h2><span class="badge">Barras = Vendas • Linha = Recompensa</span></div>
+            <canvas id="chartAtacado"></canvas>
+            <table class="table" id="tableAtacado"></table>
+          </div>
+          <div class="panel">
+            <div class="title"><h2>Varejo</h2><span class="badge">Barras = Vendas</span></div>
+            <canvas id="chartVarejo"></canvas>
+            <table class="table" id="tableVarejo"></table>
+          </div>
+        </div>
+        <div class="note" style="margin-top:10px">Formatação em R$ (pt-BR). Meses sem valor informado foram considerados 0.</div>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    Feito com Chart.js • Página única (sem servidor)
+  </footer>
+
+  <script>
+    const MESES = [
+      "JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO (Até dia 13/08)"
+    ];
+    const Z = (arr) => MESES.map((_, i) => arr[i] ?? 0);
+
+    const vendedoresRaw = {
+      "ELLYZANIA MARIA": {
+        varejo: Z([0,0,0,0,0,0,15850,0]),
+        atacado: Z([0,0,0,0,0,0,20182.2,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+        recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+        faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
+        recompensaVarejo: Z([0,0,0,0,0,0,0,0])
+      },
+      "KAITH TIBÚRCIO": {
+        varejo: Z([0,0,0,0,0,0,32060,0]),
+        atacado: Z([0,0,0,0,0,0,1867,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+        recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+        faixaVarejo: Z(["0","0","0","0","0","0","R$ 25.000 a R$50.000","0"]),
+        recompensaVarejo: Z([0,0,0,0,0,0,200,0])
+      },
+	    "CINTIAA": {
+        varejo: Z([0,0,0,0,0,0,25743,0]),
+        atacado: Z([0,0,0,0,0,0,3165,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		faixaVarejo: Z(["0","0","0","0","0","0","R$ 25.000 a R$50.000 ","0"]),
+		recompensaVarejo: Z([0,0,0,0,0,0,200,0])
+      },
+	  	"TACIANA MERCES": {
+        varejo: Z([0,0,0,0,0,0,21440,0]),
+        atacado: Z([0,0,0,0,0,0,4157.6,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
+      },
+	  	"GLEICE": {
+        varejo: Z([0,0,0,0,0,0,15571,0]),
+        atacado: Z([0,0,0,0,0,0,3499.5,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
+      },
+	  	"RICHARLYSON (E)": {
+        varejo: Z([0,0,0,0,0,0,16852,0]),
+        atacado: Z([0,0,0,0,0,0,2927.2,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
+      },
+	  	"VIVIANE DE ARAUJO": {
+        varejo: Z([0,0,0,0,0,0,9168,0]),
+        atacado: Z([0,0,0,0,0,0,18903.15,0]),
+        faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
+		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
+      },
+      // Adicione os outros vendedores seguindo o mesmo formato...
+    };
+
+    const fmtBRL = (n) => (n||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    const vendedores = Object.keys(vendedoresRaw).sort((a,b)=> a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
+
+    const vendorListEl = document.getElementById('vendorList');
+    const searchEl = document.getElementById('search');
+
+    function renderVendorList(filter = ''){
+      vendorListEl.innerHTML = '';
+      const f = filter.trim().toLowerCase();
+      vendedores.forEach(name => {
+        if (f && !name.toLowerCase().includes(f)) return;
+        const li = document.createElement('div');
+        li.className = 'vendor';
+        li.innerHTML = `<span>👤</span><span>${name}</span>`;
+        li.onclick = ()=> selectVendor(name, li);
+        vendorListEl.appendChild(li);
+      });
+    }
+    searchEl.addEventListener('input', e=> renderVendorList(e.target.value));
+
+    let chartAt = null, chartVar = null, activeItem = null;
+
+    function buildAtacadoChart(ctx, meses, vendas, recompensa){
+      if (chartAt) chartAt.destroy();
+      chartAt = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: meses,
+          datasets: [
+            { label: 'Vendas Atacado (R$)', data: vendas, backgroundColor: 'rgba(59,130,246,0.7)', borderColor: 'rgba(59,130,246,1)', borderWidth: 1, yAxisID: 'y' },
+            { label: 'Recompensa (R$)', data: recompensa, type: 'line', borderColor: 'rgba(239,68,68,1)', backgroundColor: 'rgba(239,68,68,0.25)', borderWidth: 2, pointRadius: 3, tension: .25, yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 2,
+          interaction: { mode:'index', intersect:false },
+          plugins: {
+            legend: { labels:{ color:'#e5e7eb' } },
+            tooltip: { callbacks: { label: (ctx)=> `${ctx.dataset.label}: ${fmtBRL(ctx.raw)}` } }
+          },
+          scales: {
+            x: { ticks:{ color:'#cbd5e1' }, grid:{ color:'rgba(148,163,184,0.1)' } },
+            y: { position:'left', ticks:{ color:'#cbd5e1', callback: (v)=> fmtBRL(v) }, grid:{ color:'rgba(148,163,184,0.1)' } },
+            y1: { position:'right', grid: { drawOnChartArea:false }, ticks:{ color:'#cbd5e1', callback: (v)=> fmtBRL(v) } }
+          }
+        }
+      });
+    }
+
+    function buildVarejoChart(ctx, meses, vendas){
+      if (chartVar) chartVar.destroy();
+      chartVar = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: meses, datasets: [{ label: 'Vendas Varejo (R$)', data: vendas, backgroundColor: 'rgba(34,197,94,0.75)', borderColor: 'rgba(34,197,94,1)', borderWidth: 1 }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 2,
+          plugins: { legend: { labels:{ color:'#e5e7eb' } }, tooltip: { callbacks: { label: (ctx)=> `${ctx.dataset.label}: ${fmtBRL(ctx.raw)}` } } },
+          scales: {
+            x: { ticks:{ color:'#cbd5e1' }, grid:{ color:'rgba(148,163,184,0.1)' } },
+            y: { ticks:{ color:'#cbd5e1', callback:(v)=> fmtBRL(v) }, grid:{ color:'rgba(148,163,184,0.1)' } }
+          }
+        }
+      });
+    }
+
+    const tableAtEl = document.getElementById('tableAtacado');
+    function buildAtacadoTable(meses, vendas, faixa, recompensa){
+      let html = `<thead><tr><th>Mês</th><th>Vendas Atacado (R$)</th><th>Faixa</th><th>Recompensa (R$)</th></tr></thead><tbody>`;
+      meses.forEach((m, i)=>{
+        const f = (faixa[i]||"0").toString();
+        html += `<tr><td>${m}</td><td>${fmtBRL(vendas[i]||0)}</td><td>${f === '0' ? '-' : f}</td><td>${fmtBRL(recompensa[i]||0)}</td></tr>`;
+      });
+      html += `</tbody>`;
+      tableAtEl.innerHTML = html;
+    }
+
+    const tableVarEl = document.getElementById('tableVarejo');
+    function buildVarejoTable(meses, vendas, faixa, recompensa){
+      let html = `<thead><tr><th>Mês</th><th>Vendas Varejo (R$)</th><th>Faixa</th><th>Recompensa (R$)</th></tr></thead><tbody>`;
+      meses.forEach((m, i)=>{
+        const f = (faixa[i]||"0").toString();
+        html += `<tr><td>${m}</td><td>${fmtBRL(vendas[i]||0)}</td><td>${f === '0' ? '-' : f}</td><td>${fmtBRL(recompensa[i]||0)}</td></tr>`;
+      });
+      html += `</tbody>`;
+      tableVarEl.innerHTML = html;
+    }
+
+    const totalsEl = document.getElementById('totals');
+    function buildTotals(v){
+      const totVar = v.varejo.reduce((a,b)=>a+(b||0),0);
+      const totAta = v.atacado.reduce((a,b)=>a+(b||0),0);
+      const totRec = v.recompensaAtacado.reduce((a,b)=>a+(b||0),0);
+      totalsEl.innerHTML = `
+        <div class="kpi"><div class="k">Total Varejo</div><div class="v">${fmtBRL(totVar)}</div></div>
+        <div class="kpi"><div class="k">Total Atacado</div><div class="v">${fmtBRL(totAta)}</div></div>
+        <div class="kpi"><div class="k">Total Recompensa (Atacado)</div><div class="v">${fmtBRL(totRec)}</div></div>
+      `;
+    }
+
+    const sellerNameEl = document.getElementById('sellerName');
+    const chAt = document.getElementById('chartAtacado');
+    const chVr = document.getElementById('chartVarejo');
+
+    function selectVendor(name, el){
+      if (activeItem) activeItem.classList.remove('active');
+      if (el) { activeItem = el; activeItem.classList.add('active'); }
+      sellerNameEl.textContent = name;
+      const v = vendedoresRaw[name];
+      buildTotals(v);
+      buildAtacadoChart(chAt.getContext('2d'), MESES, v.atacado, v.recompensaAtacado);
+      buildVarejoChart(chVr.getContext('2d'), MESES, v.varejo);
+      buildAtacadoTable(MESES, v.atacado, v.faixaAtacado, v.recompensaAtacado);
+      buildVarejoTable(MESES, v.varejo, v.faixaVarejo, v.recompensaVarejo);
+    }
+
+    renderVendorList('');
+    const firstVendor = vendorListEl.querySelector('.vendor');
+    if (firstVendor){ firstVendor.click(); }
+  </script>
+</body>
+</html>
