@@ -113,30 +113,30 @@
 
   <script>
     const MESES = [
-      "JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO (Até dia 13/08)"
+      "JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO"
     ];
     const Z = (arr) => MESES.map((_, i) => arr[i] ?? 0);
 
     const vendedoresRaw = {
       "ELLYZANIA MARIA": {
-        varejo: Z([0,0,0,0,0,0,15850,0]),
-        atacado: Z([0,0,0,0,0,0,20182.2,0]),
+        varejo: Z([0,0,0,0,0,0,15850,17114.50]),
+        atacado: Z([0,0,0,0,0,0,20182.2,24174.70]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
         recompensaVarejo: Z([0,0,0,0,0,0,0,0])
       },
       "KAITH TIBÚRCIO": {
-        varejo: Z([0,0,0,0,0,0,32060,0]),
-        atacado: Z([0,0,0,0,0,0,1867,0]),
+        varejo: Z([0,0,0,0,0,0,32060,9972]),
+        atacado: Z([0,0,0,0,0,0,1867,1500]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
         faixaVarejo: Z(["0","0","0","0","0","0","R$ 25.000 a R$50.000","0"]),
         recompensaVarejo: Z([0,0,0,0,0,0,200,0])
       },
 	    "CINTIAA": {
-        varejo: Z([0,0,0,0,0,0,25743,0]),
-        atacado: Z([0,0,0,0,0,0,3165,0]),
+        varejo: Z([0,0,0,0,0,0,25743,18179]),
+        atacado: Z([0,0,0,0,0,0,3165,1792]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
 		faixaVarejo: Z(["0","0","0","0","0","0","R$ 25.000 a R$50.000 ","0"]),
@@ -151,26 +151,26 @@
 		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
       },
 	  	"GLEICE": {
-        varejo: Z([0,0,0,0,0,0,15571,0]),
-        atacado: Z([0,0,0,0,0,0,3499.5,0]),
+        varejo: Z([0,0,0,0,0,0,15571,23396]),
+        atacado: Z([0,0,0,0,0,0,3499.5,6981.85]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
 		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
       },
 	  	"RICHARLYSON (E)": {
-        varejo: Z([0,0,0,0,0,0,16852,0]),
-        atacado: Z([0,0,0,0,0,0,2927.2,0]),
+        varejo: Z([0,0,0,0,0,0,16852,17114]),
+        atacado: Z([0,0,0,0,0,0,2927.2,3632]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
 		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
       },
 	  	"VIVIANE DE ARAUJO": {
-        varejo: Z([0,0,0,0,0,0,9168,0]),
-        atacado: Z([0,0,0,0,0,0,18903.15,0]),
+        varejo: Z([0,0,0,0,0,0,9168,15655]),
+        atacado: Z([0,0,0,0,0,0,18903.15,33229.34]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0"]),
-		recompensaAtacado: Z([0,0,0,0,0,0,0,0]),
+		recompensaAtacado: Z([0,0,0,0,0,0,0,R$ 25.000 a R$50.000 ]),
 		faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
 		recompensaVarejo: Z([0,0,0,0,0,0,0,0])
       },
@@ -302,5 +302,6 @@
   </script>
 </body>
 </html>
+
 
 
