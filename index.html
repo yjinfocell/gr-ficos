@@ -112,24 +112,24 @@
   </footer>
 
   <script>
-    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO (01 a 14)"];
+    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO"];
     const Z = (arr) => MESES.map((_, i) => arr[i] ?? 0);
     const fmtBRL = (n) => (n||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 
     const vendedoresRaw = {
       "ALEXANDRE LOPES": {
-        varejo: Z([3770,1140,3148.8,2607,3225,7164,4740,1300,525]),
-        atacado: Z([266444.3,301717.06,257184.30,356572.55,214774.85,189859.26,266051.33,204776.46,116792.06]),
+        varejo: Z([3770,1140,3148.8,2607,3225,7164,4740,1300,1320]),
+        atacado: Z([266444.3,301717.06,257184.30,356572.55,214774.85,189859.26,266051.33,204776.46,179984.46]),
         faixaAtacado: Z(["Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","R$ 176.000 a R$ 215.000","R$ 246.000 a R$ 275.000","R$ 176.000 a R$ 215.000","R$ 90.000 a R$ 120.000"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
-        recompensaAtacado: Z([1332.22,1508.6,1285.92,1782.86,1073,1100,1375,1100,125]),
+        recompensaAtacado: Z([1332.22,1508.6,1285.92,1782.86,1073,1100,1375,1100,1320]),
         recompensaVarejo: Z([0,0,0,0,0,0,0,0,0]),
         statusAtacado: Z(["Pago","Pago","Pago","Pago","Pago","Pago","Pago","Pago","s/r"]),
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"])
       },
      "AYALA GARCIA- ESTAGIÁRIO ATENDENTE": {
-        varejo: Z([0,0,0,0,0,0,0,5640,1540]),
-        atacado: Z([0,0,0,0,0,0,0,7664.3,3449.4]),
+        varejo: Z([0,0,0,0,0,0,0,5640,1219]),
+        atacado: Z([0,0,0,0,0,0,0,7664.3,6406.9]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0","0"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0,0]),
@@ -138,8 +138,8 @@
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"])
       },
       "CAROLYNE SOARES DA SILVA": {
-        varejo: Z([0,0,0,16298,7694,10834.5,8136,8918,3080]),
-        atacado: Z([0,0,0,24867.5,12344.3,6898.7,19818,11864.4,16853.2]),
+        varejo: Z([0,0,0,16298,7694,10834.5,8136,8918,4252]),
+        atacado: Z([0,0,0,24867.5,12344.3,6898.7,19818,11864.4,24712.8]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0","15.000 a 30.000"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0,50]),
@@ -148,8 +148,8 @@
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"])
       },
       "FERNANDA STHEPHANNY": {
-        varejo: Z([0,0,0,0,0,0,8825,18939,2310]),
-        atacado: Z([0,0,0,0,0,0,23126.9,25373.65,10567.2]),
+        varejo: Z([0,0,0,0,0,0,8825,18939,7430]),
+        atacado: Z([0,0,0,0,0,0,23126.9,25373.65,22554.4]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","R$ 25.000 a R$50.000","0"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,200,0]),
@@ -158,24 +158,14 @@
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"]) 
       },
       "LUCAS VINICIUS": {
-        varejo: Z([6402,1840,4295,4939,5859,4886,270,9191.5,1700]),
-        atacado: Z([29207,23489,20137.1,12502.5,18572.6,9324.2,982.5,18502,8145.5]),
+        varejo: Z([6402,1840,4295,4939,5859,4886,270,9191.5,4078]),
+        atacado: Z([29207,23489,20137.1,12502.5,18572.6,9324.2,982.5,18502,11264.2]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0","0"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0,0]),
         recompensaVarejo: Z([0,0,0,0,0,0,0,0,0]),
         statusAtacado: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"]),
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"]) 
-      },
-     "MARIANA FRANCISCA DA SILVA": {
-        varejo: Z([7216,2960,9157,13556,10216,8916,5441,825]),
-        atacado: Z([71374.6,62889.07,84098.04,47881,60999,54714.55,69391.7,54549.8]),
-        faixaAtacado: Z(["0","0","0","0","0","R$ 51.000 a R$ 85.000","R$ 51.000 a R$ 85.000","R$ 51.000 a R$ 85.000"]),
-        faixaVarejo: Z(["0","0","0","0","0","0","0","0"]),
-        recompensaAtacado: Z([0,316,447,0,0,300,300,300]),
-        recompensaVarejo: Z([0,0,0,0,0,0,0,0]),
-        statusAtacado: Z(["s/r","Pago","Pago","s/r","s/r","Pago","Pago","Pago"]),
-        statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"]) 
       },
     "VALDENIR": {
         varejo: Z([3527,1080,4440,4221,18403,5613.5,80,2177,1845]),
@@ -188,8 +178,8 @@
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r"]) 
       },
     		"WANESSA": {
-        varejo: Z([0,0,0,0,0,0,0,1120,3535]),
-        atacado: Z([0,0,0,0,0,0,0,8040.7,12093.8]),
+        varejo: Z([0,0,0,0,0,0,0,1120,13190]),
+        atacado: Z([0,0,0,0,0,0,0,8040.7,27162.3]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0","0"]),
         faixaVarejo: Z(["0","0","0","0","0","0","0","0","0"]),
         recompensaAtacado: Z([0,0,0,0,0,0,0,0,0]),
@@ -347,6 +337,7 @@
   </script>
 </body>
 </html>
+
 
 
 
