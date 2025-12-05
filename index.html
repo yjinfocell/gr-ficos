@@ -85,7 +85,7 @@
       <div class="panel">
         <div class="title">
           <h2 id="sellerName">Selecione um vendedor</h2>
-          <span id="periodBadge" class="badge">Período: Jan → Out</span>
+          <span id="periodBadge" class="badge">Período: Jan → Nov</span>
         </div>
 
         <div class="totals" id="totals"></div>
@@ -112,7 +112,7 @@
   </footer>
 
   <script>
-    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO"];
+    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO"];
     const Z = (arr) => MESES.map((_, i) => arr[i] ?? 0);
     const fmtBRL = (n) => (n||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 
@@ -297,6 +297,7 @@
   </script>
 </body>
 </html>
+
 
 
 
