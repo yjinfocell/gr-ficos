@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard – Vendas por Vendedor FILIAL</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root{
       --bg:#0f172a;
@@ -26,6 +27,11 @@
       padding:20px; display:flex; gap:12px; align-items:center; justify-content:space-between; border-bottom:1px solid #1f2937; position:sticky; top:0; background:rgba(2,6,23,.8); backdrop-filter: blur(6px); z-index:10;
     }
     header h1{font-size:20px; margin:0; font-weight:600}
+    .header-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
     .wrap{display:grid; grid-template-columns:320px 1fr; min-height:calc(100vh - 64px)}
     @media (max-width: 1024px){ .wrap{grid-template-columns:1fr} }
     aside{
@@ -68,12 +74,92 @@
     .status-nao{ color: var(--danger); font-weight: bold; }
 
     .panel canvas { max-height: 300px; width: 100% !important; }
+
+    .pdf-btn {
+      background: var(--accent2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+    }
+    .pdf-btn:hover {
+      opacity: 0.9;
+    }
+    .pdf-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* Estilos para o PDF */
+    .pdf-content {
+      display: none;
+    }
+    .pdf-content.active {
+      display: block;
+      background: white;
+      color: black;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    .pdf-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 12px;
+    }
+    .pdf-content th {
+      background: #f3f4f6;
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .pdf-content td {
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+    }
+    .pdf-content .status-pago { color: #16a34a; }
+    .pdf-content .status-nao { color: #dc2626; }
+    .pdf-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #333;
+    }
+    .pdf-header h1 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+    .pdf-header .seller-info {
+      font-size: 18px;
+      color: #666;
+    }
+    .pdf-section {
+      margin: 20px 0;
+    }
+    .pdf-section h2 {
+      background: #f3f4f6;
+      padding: 10px;
+      margin: 0 0 15px;
+      font-size: 18px;
+      border-left: 4px solid var(--accent2);
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Dashboard – Vendas por Vendedor FILIAL</h1>
-    <div class="hint">Clique em um vendedor para visualizar os gráficos e as tabelas.</div>
+    <div class="header-controls">
+      <div class="hint">Clique em um vendedor para visualizar os dados</div>
+      <button class="pdf-btn" onclick="gerarPDF()">
+        <span>📄</span> Gerar PDF do Relatório
+      </button>
+    </div>
   </header>
 
   <div class="wrap">
@@ -106,6 +192,9 @@
       </div>
     </main>
   </div>
+
+  <!-- Conteúdo oculto para PDF -->
+  <div id="pdfContent" class="pdf-content"></div>
 
   <footer>
     Feito com Chart.js • Página única (sem servidor)
@@ -157,7 +246,7 @@
         statusAtacado: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","Pago","Pago","Pago","Não Pago","Não Pago","Não Pago","Não Pago"]),
         statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","Não Pago","Não Pago","Não Pago","s/r"]) 
       },
-            "RICHARLYSSON": {
+      "RICHARLYSSON": {
         varejo: Z([0,0,0,0,0,0,0,0,490,1657.5,3832,6053,2987.7,1791]),
         atacado: Z([0,0,0,0,0,0,0,0,3465,428,4344,2047,2635,3965.7]),
         faixaAtacado: Z(["0","0","0","0","0","0","0","0","0","0","0","0","0","0"]),
@@ -292,47 +381,115 @@
     }
 
     // Seleciona automaticamente o primeiro vendedor
-    const firstVendor = vendorListEl.querySelector('.vendor');
-    if(firstVendor){ firstVendor.click(); }
+    setTimeout(() => {
+      const firstVendor = vendorListEl.querySelector('.vendor');
+      if(firstVendor){ firstVendor.click(); }
+    }, 100);
+
+    // ----------------------- Função para gerar PDF -----------------------
+    function gerarPDF() {
+      const vendedorAtual = sellerNameEl.textContent;
+      if (!vendedorAtual || vendedorAtual === "Selecione um vendedor") {
+        alert("Selecione um vendedor primeiro!");
+        return;
+      }
+
+      const v = vendedoresRaw[vendedorAtual];
+      const pdfContent = document.getElementById('pdfContent');
+      
+      // Construir conteúdo do PDF
+      let html = `
+        <div class="pdf-header">
+          <h1>Relatório de Vendas</h1>
+          <div class="seller-info">
+            <strong>Vendedor:</strong> ${vendedorAtual}<br>
+            <strong>Período:</strong> Janeiro a Fevereiro/2026<br>
+            <strong>Data do relatório:</strong> ${new Date().toLocaleDateString('pt-BR')}
+          </div>
+        </div>
+      `;
+
+      // Totais
+      const totVar = v.varejo.reduce((a,b)=>a+(b||0),0);
+      const totAta = v.atacado.reduce((a,b)=>a+(b||0),0);
+      const totRecAta = v.recompensaAtacado.reduce((a,b)=>a+(b||0),0);
+      const totRecVar = v.recompensaVarejo.reduce((a,b)=>a+(b||0),0);
+
+      html += `
+        <div class="pdf-section">
+          <h2>📊 Resumo de Vendas</h2>
+          <table>
+            <tr>
+              <th>Total Varejo</th>
+              <th>Total Atacado</th>
+              <th>Recompensa Atacado</th>
+              <th>Recompensa Varejo</th>
+            </tr>
+            <tr>
+              <td>${fmtBRL(totVar)}</td>
+              <td>${fmtBRL(totAta)}</td>
+              <td>${fmtBRL(totRecAta)}</td>
+              <td>${fmtBRL(totRecVar)}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // Tabela Atacado
+      html += `<div class="pdf-section"><h2>📦 Vendas Atacado</h2><table>`;
+      html += `<tr><th>Mês</th><th>Vendas</th><th>Faixa</th><th>Recompensa</th><th>Status</th></tr>`;
+      MESES.forEach((mes, i) => {
+        const f = v.faixaAtacado[i] === "0" ? "-" : v.faixaAtacado[i];
+        const stClass = v.statusAtacado[i] === "Pago" ? "status-pago" : "status-nao";
+        html += `<tr>
+          <td>${mes}</td>
+          <td>${fmtBRL(v.atacado[i] || 0)}</td>
+          <td>${f}</td>
+          <td>${fmtBRL(v.recompensaAtacado[i] || 0)}</td>
+          <td class="${stClass}">${v.statusAtacado[i]}</td>
+        </tr>`;
+      });
+      html += `</table></div>`;
+
+      // Tabela Varejo
+      html += `<div class="pdf-section"><h2>🏪 Vendas Varejo</h2><table>`;
+      html += `<tr><th>Mês</th><th>Vendas</th><th>Faixa</th><th>Recompensa</th><th>Status</th></tr>`;
+      MESES.forEach((mes, i) => {
+        const f = v.faixaVarejo[i] === "0" ? "-" : v.faixaVarejo[i];
+        const stClass = v.statusVarejo[i] === "Pago" ? "status-pago" : "status-nao";
+        html += `<tr>
+          <td>${mes}</td>
+          <td>${fmtBRL(v.varejo[i] || 0)}</td>
+          <td>${f}</td>
+          <td>${fmtBRL(v.recompensaVarejo[i] || 0)}</td>
+          <td class="${stClass}">${v.statusVarejo[i]}</td>
+        </tr>`;
+      });
+      html += `</table></div>`;
+
+      html += `<div style="text-align: center; margin-top: 30px; font-size: 10px; color: #666;">
+        Relatório gerado automaticamente pelo sistema de vendas.
+      </div>`;
+
+      pdfContent.innerHTML = html;
+      pdfContent.classList.add('active');
+
+      // Configurações do PDF
+      const element = pdfContent;
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `relatorio_${vendedorAtual.replace(/\s+/g, '_')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Gerar PDF
+      html2pdf().set(opt).from(element).save().then(() => {
+        pdfContent.classList.remove('active');
+        pdfContent.innerHTML = '';
+      });
+    }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
