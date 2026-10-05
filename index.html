@@ -201,20 +201,20 @@
   </footer>
 
   <script>
-    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO", "JANEIRO (2026)", "FEVEREIRO (2026)",];
+    const MESES = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO", "JANEIRO (2026)", "FEVEREIRO (2026)","MARÇO (2026)",];
     const Z = (arr) => MESES.map((_, i) => arr[i] ?? 0);
     const fmtBRL = (n) => (n||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 
     const vendedoresRaw = {
       "ALEXANDRE LOPES": {
-        varejo: Z([3770,1140,3148.8,2607,3225,7164,4740,1300,1320,10557,4267.5,15085.5,6576.66,5683]),
-        atacado: Z([266444.3,301717.06,257184.30,356572.55,214774.85,189859.26,266051.33,204776.46,179984.46,229292.74,98273.68,227940.63,236657.24,137321.1]),
-        faixaAtacado: Z(["Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","R$ 176.000 a R$ 215.000","R$ 246.000 a R$ 275.000","R$ 176.000 a R$ 215.000","R$ 180.000 a R$ 220.000 (arrendondado)","R$ 220.000 a R$ 260.000","R$ 90.000 a R$ 120.000","R$ 220.000 a R$ 260.000","R$ 220.000 a R$ 260.000","R$ 120.000 a R$ 150.000"]),
-        faixaVarejo: Z(["0","0","0","0","0","0","0","0","0","0","R$ 15.000 a R$ 30.000","0","0"]),
-        recompensaAtacado: Z([1332.22,1508.6,1285.92,1782.86,1073,1100,1375,1100,500,600,200,600,600,300]),
-        recompensaVarejo: Z([0,0,0,0,0,0,0,0,0,0,0,50,0,0]),
-        statusAtacado: Z(["Pago","Pago","Pago","Pago","Pago","Pago","Pago","Pago","Pago","Não Pago","Não Pago","Não Pago","Não Pago","Não Pago"]),
-        statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","Não Pago","s/r","s/r"])
+        varejo: Z([3770,1140,3148.8,2607,3225,7164,4740,1300,1320,10557,4267.5,15085.5,6576.66,5683,----]),
+        atacado: Z([266444.3,301717.06,257184.30,356572.55,214774.85,189859.26,266051.33,204776.46,179984.46,229292.74,98273.68,227940.63,236657.24,137321.1219958.01]),
+        faixaAtacado: Z(["Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","Percentual com vale","R$ 176.000 a R$ 215.000","R$ 246.000 a R$ 275.000","R$ 176.000 a R$ 215.000","R$ 180.000 a R$ 220.000 (arrendondado)","R$ 220.000 a R$ 260.000","R$ 90.000 a R$ 120.000","R$ 220.000 a R$ 260.000","R$ 220.000 a R$ 260.000","R$ 120.000 a R$ 150.000","R$ 180.000 a R$ 220.000"]),
+        faixaVarejo: Z(["0","0","0","0","0","0","0","0","0","0","R$ 15.000 a R$ 30.000","0","0","0"]),
+        recompensaAtacado: Z([1332.22,1508.6,1285.92,1782.86,1073,1100,1375,1100,500,600,200,600,600,300,500]),
+        recompensaVarejo: Z([0,0,0,0,0,0,0,0,0,0,0,50,0,0,0]),
+        statusAtacado: Z(["Pago","Pago","Pago","Pago","Pago","Pago","Pago","Pago","Pago","Não Pago","Não Pago","Não Pago","Não Pago","Não Pago","Não Pago"]),
+        statusVarejo: Z(["s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","s/r","Não Pago","s/r","s/r","s/r"])
       },
      "AYALA GARCIA- ESTAGIÁRIO ATENDENTE": {
         varejo: Z([0,0,0,0,0,0,0,5640,1219,5944,8385,14139,15522,10533]),
